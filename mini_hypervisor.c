@@ -361,15 +361,15 @@ void* vm_thread(void* args) {
                                 create_unique_filename(f->path, vargs->id, newPath, sizeof(newPath));
                                 if (access(newPath, F_OK) == 0) { // local file for the vm exists
 
-                                    f->fd = open(newPath, f->mode == 1 ? O_RDWR : O_RDONLY, 666);
+                                    f->fd = open(newPath, f->mode == 1 ? O_RDWR : O_RDONLY, 0777);
                                     f->shared = 0;
                                 }
                                 else if (check_file_in_list(vargs->shared_files, vargs->shared_count, f->path) == 1) { // shared file exists
-                                    f->fd = open(f->path, f->mode == 1 ? O_RDWR : O_RDONLY, 666);
+                                    f->fd = open(f->path, f->mode == 1 ? O_RDWR : O_RDONLY, 0777);
                                     f->shared = 1;
                                 }
                                 else if (f->mode == 1) { // mode is read/write, create new file
-                                    f->fd = open(newPath, O_RDWR | O_CREAT, 666);
+                                    f->fd = open(newPath, O_RDWR | O_CREAT, 0777);
                                     f->shared = 0;
                                 }
                                 else {
@@ -387,7 +387,7 @@ void* vm_thread(void* args) {
                                 if (f->mode == 0) { fprintf(stderr, "Trying to write without the permission\n"); return NULL; }
 
                                 if (f->shared == 1) {
-                                    int newFd = open(newPath, O_RDWR | O_CREAT | O_TRUNC, 666);
+                                    int newFd = open(newPath, O_RDWR | O_CREAT | O_TRUNC, 0777);
                                     if (newFd < 0) { fprintf(stderr, "Cannot create new file\n"); return NULL; }
 
                                     // copy on write
